@@ -1,0 +1,41 @@
+version: '3.2'
+
+services:
+  api:
+    build: "big_voto/"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  voteservice:
+    build: "voteService/"
+    ports:
+      - "8005:8005"
+    depends_on:
+      - db
+      - rabbitmq
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.postgres/data/:/var/lib/postgresql/data/
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./.rabbitmq/data/:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=123456
