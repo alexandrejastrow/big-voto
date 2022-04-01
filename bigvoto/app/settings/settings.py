@@ -9,8 +9,9 @@ class AppSettings(BaseSettings):
     testing: bool = False
     dev_mode: bool = False
     debug: bool = False
-    database_url: str = ""
-    database_url_dev: str | bool = False
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
 
     class config:
         env_file = ".env"

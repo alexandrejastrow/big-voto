@@ -1,0 +1,11 @@
+# app env
+APP_NAME = "Big Voto"
+TESTING = False
+DEV_MODE = True
+DEBUG = False
+
+# db env
+DATABASE_URL = ""
+DATABASE_URL_DEV = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+
+# rabbitmq env

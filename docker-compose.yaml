@@ -2,19 +2,22 @@ version: '3.2'
 
 services:
   api:
-    build: "big_voto/"
+    build: "bigvoto/"
     ports:
       - "8000:8000"
     depends_on:
       - db
-
+    volumes:
+      - ./bigvoto:/app
   voteservice:
     build: "voteService/"
     ports:
-      - "8005:8005"
+      - "8050:8050"
     depends_on:
       - db
       - rabbitmq
+    volumes:
+      - ./voteService:/app
 
   db:
     image: postgres:13-alpine
