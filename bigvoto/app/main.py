@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from app.routes.user_router import router as user_routes
+from app.routes import routes
 from app import __version__
 from app.settings.settings import app_settings
 
@@ -10,7 +10,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-app.include_router(user_routes, prefix="/api")
+app.include_router(routes, prefix="/api")
 
 
 @app.get("/", response_class=RedirectResponse, include_in_schema=False)
