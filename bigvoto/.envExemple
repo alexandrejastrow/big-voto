@@ -4,13 +4,26 @@ TESTING = False
 DEV_MODE = True
 DEBUG = False
 
+
 # securty env
 SECRET_KEY = ""
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440
+ALGORITHM = ""
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
 # db env
 DATABASE_URL = ""
 DATABASE_URL_DEV = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
 
 # rabbitmq env
+
+# email env -> gmail configs
+MAIL_USERNAME = ""
+MAIL_PASSWORD = ""
+MAIL_PORT = 587
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_TLS = True
+MAIL_SSL = False
+MAIL_USE_CREDENTIALS = True
+MAIL_VALIDATE_CERTS = True
+MAIL_HOST_DEV = "http://localhost:8000"
+MAIL_HOST_PROD = ""

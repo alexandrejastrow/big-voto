@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import List
 import datetime
 from uuid import UUID
 
@@ -19,9 +20,9 @@ class UserBase(BaseModel):
 class User(UserBase):
     id: UUID
     username: str
-    disabled: int | bool
+    is_active: bool
     avathar_url: str | None = None
-    is_admin: int | bool = False
+    is_admin: bool = False
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
@@ -43,10 +44,24 @@ class UserUpdated(UserBase):
     password: str | None = None
     username: str | None = None
     avathar_url: str | None = None
-    disabled: int | bool
+    is_active: bool
     avathar_url: str | None = None
-    is_admin: int | bool = False
+    is_admin: bool = False
+
+    def dict(self):
+        return {
+            "username": self.username,
+            "email": self.email,
+            "password": self.password,
+            "avathar_url": self.avathar_url,
+            "is_active": self.is_active,
+            "is_admin": self.is_admin
+        }
 
 
 class TokenPayload(BaseModel):
     sub: str | None = None
+
+
+class EmailSchema(BaseModel):
+    email: List[EmailStr]

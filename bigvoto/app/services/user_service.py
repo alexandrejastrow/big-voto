@@ -2,12 +2,11 @@ from sqlalchemy.future import select
 from sqlalchemy import delete, update
 from app.infra.models import models
 from app.infra.sqlalchemy import database
-from app.schemas.schemas import UserInDB, UserUpdated
+from app.schemas.schemas import UserInDB
 
 
 class UserService:
     async def create(self, user: UserInDB):
-
         async with database.async_session() as session:
             user_db = models.User(
                 username=user.username,
@@ -20,9 +19,9 @@ class UserService:
             await session.refresh(user_db)
             return user_db
 
-    async def get_user_by_email(self, username: str):
+    async def get_user_by_email(self, email: str):
         async with database.async_session() as session:
-            result = await session.execute(select(models.User).where(models.User.email == username))
+            result = await session.execute(select(models.User).where(models.User.email == email))
             user_db = result.scalar()
             return user_db
 
@@ -38,16 +37,9 @@ class UserService:
             result = await session.commit()
             return result
 
-    async def update_user(self, id: str, user: UserUpdated):
+    async def update_user(self, id: str, **args) -> bool:
         async with database.async_session() as session:
-            await session.execute(update(models.User).where(models.User.id == id).values(
-                username=user.username,
-                email=user.email,
-                password=user.password,
-                avathar_url=user.avathar_url,
-                disabled=user.disabled,
-                is_admin=user.is_admin))
-
-            await session.commit()
-            new_user = await self.get_user_by_id(id)
-            return new_user
+            for value in args:
+                await session.execute(update(models.User).where(models.User.id == id).values(**{value: args[value]}))
+                await session.commit()
+        return True

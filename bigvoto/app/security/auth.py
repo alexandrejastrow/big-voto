@@ -11,7 +11,7 @@ from app.services.user_service import UserService
 auth2 = OAuth2PasswordBearer(
     tokenUrl='/api/users/auth',
 )
-NOT_AUTHORIZED = 0
+NOT_AUTHORIZED = False
 TOKEN_EXPIRE_MINUTES = 600
 
 
@@ -20,6 +20,7 @@ async def create_access_token(data: dict, expires_delta: timedelta = None):
 
     if expires_delta:
         expire = datetime.utcnow() + timedelta(minutes=expires_delta)
+
     else:
         expire = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
 
@@ -44,9 +45,9 @@ async def authenicate(email: str, password: str) -> User:
     if not verify_password(password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail={
             'detail': 'Incorrect username or password'})
-    if user.disabled == NOT_AUTHORIZED:
+    if user.is_active == NOT_AUTHORIZED:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail={
-            'detail': 'User is disabled'})
+            'detail': 'User is is_active'})
     return user
 
 
