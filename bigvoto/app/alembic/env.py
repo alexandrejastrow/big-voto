@@ -1,8 +1,8 @@
 from logging.config import fileConfig
-from app.infra.sqlalchemy.database import Base
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from app.infra.models import models
+from app.infra.models.models import *
+from app.infra.models.models import Base
 from alembic import context
 
 # this is the Alembic Config object, which provides

@@ -5,22 +5,24 @@ load_dotenv()
 
 
 class AppSettings(BaseSettings):
-    app_name: str = ""
-    testing: bool = False
-    dev_mode: bool = False
-    debug: bool = False
-    secret_key: str
-    algorithm: str
-    access_token_expire_minutes: int = 120
+    APP_NAME: str = ""
+    TESTING: bool = False
+    DEV_MODE: bool = False
+    DEBUG: bool = False
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    DEFAULT_MAX_TIME_TO_POLL: int
+    TIMEZONE: str
 
     class config:
         env_file = ".env"
 
 
 class DbSettings(BaseSettings):
-    dev_mode: bool = False
-    database_url: str
-    database_url_dev: str | bool = False
+    DEV_MODE: bool = False
+    DATABASE_URL: str
+    DATABASE_URL_DEV: str | bool = False
 
     class config:
         env_file = ".env"

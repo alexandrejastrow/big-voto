@@ -28,7 +28,7 @@ async def create_access_token(data: dict, expires_delta: timedelta = None):
     try:
 
         encoded_jwt = jwt.encode(
-            to_encode, app_settings.secret_key, algorithm=app_settings.algorithm)
+            to_encode, app_settings.SECRET_KEY, algorithm=app_settings.ALGORITHM)
     except JWTError:
         return
 
@@ -54,8 +54,8 @@ async def authenicate(email: str, password: str) -> User:
 async def get_user_token(token: str = Depends(auth2)):
 
     try:
-        payload = jwt.decode(token, app_settings.secret_key,
-                             algorithms=[app_settings.algorithm])
+        payload = jwt.decode(token, app_settings.SECRET_KEY,
+                             algorithms=[app_settings.ALGORITHM])
         token_data = TokenPayload(**payload)
     except JWTError:
         raise HTTPException(

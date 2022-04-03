@@ -10,7 +10,9 @@ from app.security.jwt_pass import get_password_hash
 from app.security.auth import authenicate, create_access_token, get_user_token
 from app.settings.settings import app_settings
 from app.services.email_service import mail_send
-router = APIRouter(tags=["User"])
+
+
+user_router = APIRouter(tags=["User"])
 
 
 async def email_validate(email: str):
@@ -21,7 +23,7 @@ async def email_validate(email: str):
         return False
 
 
-@router.post('/')
+@user_router.post('/')
 async def create_user(user: UserInDB, task: BackgroundTasks, user_service: UserService = Depends()):
 
     if not email_validate(user.email):
@@ -42,7 +44,7 @@ async def create_user(user: UserInDB, task: BackgroundTasks, user_service: UserS
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "User created, verify your email."})
 
 
-@router.delete('/')
+@user_router.delete('/')
 async def delete_user(user: User = Security(get_user_token), user_service: UserService = Depends()):
     user_delete = await user_service.delete_user(user.id)
     if not user_delete:
@@ -50,15 +52,15 @@ async def delete_user(user: User = Security(get_user_token), user_service: UserS
     return {"user_delete": user_delete}
 
 
-@router.post('/auth', response_model=Token)
+@user_router.post('/auth', response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await authenicate(form_data.username, form_data.password)
     access_token = await create_access_token(
-        data={'sub': user.id}, expires_delta=app_settings.access_token_expire_minutes)
+        data={'sub': user.id}, expires_delta=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@router.put('/')
+@user_router.put('/')
 async def update_user(
         username: str | None = None,
         email: str | None = None,
@@ -92,7 +94,7 @@ async def update_user(
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "User updated successfully."})
 
 
-@router.get('/mail/{id}')
+@user_router.get('/mail/{id}')
 async def resend_mail(id: str, task: BackgroundTasks):
     user = await UserService().get_user_by_id(id)
 
@@ -106,7 +108,7 @@ async def resend_mail(id: str, task: BackgroundTasks):
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "resend mail."})
 
 
-@router.get('/{id}', response_model=User)
+@user_router.get('/{id}', response_model=User)
 async def get_user(id: str, user_service: UserService = Depends()):
     user = await user_service.get_user_by_id(id)
     if not user:
@@ -115,11 +117,11 @@ async def get_user(id: str, user_service: UserService = Depends()):
     return user
 
 
-@router.get('/verify/{access_token}')
+@user_router.get('/verify/{access_token}')
 async def verify(access_token: str, user_service: UserService = Depends()):
     try:
         payload = jwt.decode(
-            access_token, app_settings.secret_key, algorithms=['HS256'])
+            access_token, app_settings.SECRET_KEY, algorithms=app_settings.ALGORITHMS)
         user = await user_service.get_user_by_id(payload['sub'])
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={

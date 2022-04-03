@@ -1,7 +1,9 @@
-from pydantic import BaseModel, EmailStr
-from typing import List
+from pydantic import BaseModel
+from typing import List, Any
 import datetime
 from uuid import UUID
+
+# tokens schemas
 
 
 class Token(BaseModel):
@@ -11,6 +13,11 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+
+class TokenPayload(BaseModel):
+    sub: str | None = None
+# users schemas
 
 
 class UserBase(BaseModel):
@@ -23,8 +30,6 @@ class User(UserBase):
     is_active: bool
     avathar_url: str | None = None
     is_admin: bool = False
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
 
     class Config:
         orm_mode = True
@@ -58,10 +63,59 @@ class UserUpdated(UserBase):
             "is_admin": self.is_admin
         }
 
-
-class TokenPayload(BaseModel):
-    sub: str | None = None
+# polls schemas
 
 
-class EmailSchema(BaseModel):
-    email: List[EmailStr]
+class PollBase(BaseModel):
+    title: str
+    description: str
+
+
+class PollCreate(PollBase):
+    start_date: datetime.datetime | None = None
+    end_date: datetime.datetime | None = None
+
+    def dict(self):
+        return {
+            "title": self.title,
+            "description": self.description,
+            "start_date": self.start_date,
+            "end_date": self.end_date
+        }
+
+
+class Poll(PollBase):
+    id: UUID
+    start_date: datetime.datetime
+    end_date: datetime.datetime
+    is_active: bool
+    author: User
+    alternatives: List[Any]
+
+    class Config:
+        orm_mode = True
+
+# alternatives schemas
+
+
+class AlternativeBase(BaseModel):
+    name: str
+    image: str | None = None
+
+
+class AlternativeCreate(AlternativeBase):
+
+    def dict(self):
+        return {
+            "name": self.name,
+            "image": self.image
+        }
+
+
+class Alternative(AlternativeBase):
+    id: UUID
+    poll: Poll
+    votes: int = 0
+
+    class Config:
+        orm_mode = True
