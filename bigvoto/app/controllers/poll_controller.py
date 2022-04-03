@@ -127,4 +127,5 @@ async def get_all_deactivated_polls():
 async def vote(poll_id: str, alternative_id: str, task: BackgroundTasks):
     task.add_task(queue_sender.send_message, {
                   "poll_id": poll_id, "alternative_id": alternative_id})
+
     return {"message": "Vote sent to queue"}
