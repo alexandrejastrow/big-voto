@@ -1,11 +1,8 @@
 from sqlalchemy import Column, String, DateTime, Boolean, Text, ForeignKey, Integer
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
-from app.settings.settings import app_settings
 import uuid
-import pytz
 
-time_zone = pytz.timezone(app_settings.TIMEZONE)
 Base = declarative_base()
 
 
@@ -24,9 +21,9 @@ class User(Base):
     is_active = Column(Boolean, default=False)
     avathar_url = Column(String, default="", nullable=True)
     created_at = Column(DateTime(timezone=True),
-                        server_default=func.now(timezone=time_zone))
+                        server_default=func.now())
     updated_at = Column(DateTime(timezone=True),
-                        server_default=func.now(), onupdate=func.now(timezone=time_zone))
+                        server_default=func.now(), onupdate=func.now())
 
     polls = relationship("Poll", back_populates="author")
 
@@ -53,9 +50,9 @@ class Poll(Base):
     end_date = Column(DateTime(timezone=True), nullable=False)
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True),
-                        server_default=func.now(timezone=time_zone))
+                        server_default=func.now())
     updated_at = Column(DateTime(timezone=True),
-                        server_default=func.now(), onupdate=func.now(timezone=time_zone))
+                        server_default=func.now(), onupdate=func.now())
 
     author_id = Column(String, ForeignKey("users.id"), nullable=False)
 

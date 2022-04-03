@@ -28,6 +28,16 @@ class DbSettings(BaseSettings):
         env_file = ".env"
 
 
+class RabbitmqSettings(BaseSettings):
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: int
+
+    class config:
+        env_file = ".env"
+
+
 class MailSettings(BaseSettings):
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
@@ -59,6 +69,12 @@ def get_mail_config() -> MailSettings:
     return MailSettings()
 
 
+@lru_cache()
+def get_rabbit_config() -> RabbitmqSettings:
+    return RabbitmqSettings()
+
+
 app_settings = get_app_config()
 db_settings = get_db_config()
 mail_settings = get_mail_config()
+rabbitmb_settings = get_rabbit_config()

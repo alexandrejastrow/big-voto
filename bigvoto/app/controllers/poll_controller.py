@@ -1,12 +1,11 @@
 from app.security.auth import get_user_token
 from app.services.poll_service import PollService, AlternativeService
-from app.services import verify_polls
 from app.schemas.schemas import AlternativeCreate, PollCreate, User
 from datetime import datetime, timedelta
 from typing import List
-from fastapi import APIRouter, Security, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Security, HTTPException, status
 from app.settings.settings import app_settings
-
+from app.services import queue_sender
 
 DEFAULT_MAX_TIME_TO_POLL = app_settings.DEFAULT_MAX_TIME_TO_POLL
 TIMESTAMP_TOLEANCE = 60
@@ -105,22 +104,27 @@ async def get_all_polls():
 
 
 @poll_router.get("/active")
-async def get_all_active_polls(task: BackgroundTasks):
+async def get_all_active_polls():
     poll_service = PollService()
     alternative_service = AlternativeService()
     polls = await poll_service.get_all(is_active=True)
-    task.add_task(verify_polls.veryfy, polls)
     for poll in polls:
         poll["alternatives"] = await alternative_service.get_all(poll['Poll'].id)
     return polls
 
 
 @poll_router.get("/deactivated")
-async def get_all_deactivated_polls(task: BackgroundTasks):
+async def get_all_deactivated_polls():
     poll_service = PollService()
     alternative_service = AlternativeService()
     polls = await poll_service.get_all(is_active=False)
-    task.add_task(verify_polls.veryfy, polls)
     for poll in polls:
         poll["alternatives"] = await alternative_service.get_all(poll['Poll'].id)
     return polls
+
+
+@poll_router.get("/{poll_id}/{alternative_id}")
+async def vote(poll_id: str, alternative_id: str, task: BackgroundTasks):
+    task.add_task(queue_sender.send_message, {
+                  "poll_id": poll_id, "alternative_id": alternative_id})
+    return {"message": "Vote sent to queue"}
