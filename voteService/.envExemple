@@ -1,0 +1,12 @@
+# db env
+DB_HOST = "db"
+DB_PORT = 5432
+DB_USER = "postgres"
+DB_PASS = "postgres"
+DB_NAME = "postgres"
+
+# rabbitmq env
+RABBITMQ_USER = "admin"
+RABBITMQ_PASSWORD = "123456"
+RABBITMQ_HOST = "rabbitmq"
+RABBITMQ_PORT = 5672
