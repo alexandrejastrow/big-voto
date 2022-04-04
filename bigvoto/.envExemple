@@ -1,10 +1,9 @@
 # app env
-APP_NAME = ""
+APP_NAME = "Big Voto"
 TESTING = False
 DEV_MODE = True
 DEBUG = False
 DEFAULT_MAX_TIME_TO_POLL = 60
-TIMEZONE = "America/Sao_Paulo"
 
 # securty env
 SECRET_KEY = ""
@@ -16,10 +15,13 @@ DATABASE_URL = ""
 DATABASE_URL_DEV = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
 
 # rabbitmq env
-RABBITMQ_USER = "admin"
-RABBITMQ_PASSWORD = "123456"
-RABBITMQ_HOST = "rabbitmq"
+STACKHERO_RABBITMQ_USER = "admin"
+STACKHERO_RABBITMQ_PASSWORD = "123456"
+STACKHERO_RABBITMQ_AMQP_URL_TLS = ""
+STACKHERO_RABBITMQ_HOST = ""
 RABBITMQ_PORT = 5672
+STACKHERO_RABBITMQ_STOMP_URL_TLS = ""
+STACKHERO_RABBITMQ_MQTT_URL_TLS = ""
 
 # email env
 MAIL_USERNAME = ""
