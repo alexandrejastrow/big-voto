@@ -53,12 +53,15 @@ func Recive(conn *amqp.Connection, db *sql.DB) {
 
 func Connection() (*amqp.Connection, error) {
 
-	rabbitUser := envs.GoDotEnvVariable("RABBITMQ_USER")
-	rabbitPass := envs.GoDotEnvVariable("RABBITMQ_PASSWORD")
-	rabbitHost := envs.GoDotEnvVariable("RABBITMQ_HOST")
-	rabbitPort := envs.GoDotEnvVariable("RABBITMQ_PORT")
+	rabbitmq_host := envs.GoDotEnvVariable("RABBITMQ_HOST")
+	rabbitmq_port := envs.GoDotEnvVariable("RABBITMQ_PORT")
+	rabbitmq_user := envs.GoDotEnvVariable("RABBITMQ_USER")
+	rabbitmq_pass := envs.GoDotEnvVariable("RABBITMQ_PASS")
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitUser, rabbitPass, rabbitHost, rabbitPort))
+	url := "amqp://" + rabbitmq_user + ":" + rabbitmq_pass + "@" + rabbitmq_host + ":" + rabbitmq_port
+
+	fmt.Println(url)
+	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672")
 
 	return conn, err
 }

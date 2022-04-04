@@ -5,18 +5,19 @@ services:
     build: "bigvoto/"
     ports:
       - "8000:8000"
+    restart: always
     depends_on:
+      - rabbitmq
       - db
     volumes:
       - ./bigvoto:/app
   voteservice:
     build: "voteService/"
     ports:
-      - "8050:8050"
+      - "8010:8010"
     restart: always
     depends_on:
-      - rabbitmq
-      - db
+      - api
     volumes:
       - ./voteService:/app
 
@@ -42,5 +43,15 @@ services:
     volumes:
       - ./.rabbitmq/data/:/var/lib/rabbitmq/
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=123456
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  #bigvotofrontend:
+  #  build: "bigvotoFrontend/"
+  #  container_name: bigvotoFrontend
+  #  volumes:
+  #    - ./bigvotoFrontend:/src
+  #  ports:
+  #    - "3000:3000"
+  #  restart: always
+  #  depends_on:
+  #    - api

@@ -13,13 +13,14 @@ import (
 )
 
 func conn() (*sql.DB, error) {
-	db_host := envs.GoDotEnvVariable("DB_HOST")
-	db_port := envs.GoDotEnvVariable("DB_PORT")
-	db_user := envs.GoDotEnvVariable("DB_USER")
-	db_pass := envs.GoDotEnvVariable("DB_PASS")
-	db_name := envs.GoDotEnvVariable("DB_NAME")
 
-	db, err := sql.Open("postgres", "host="+db_host+" port="+db_port+" user="+db_user+" password="+db_pass+" dbname="+db_name+" sslmode=disable")
+	pg_host := envs.GoDotEnvVariable("DB_HOST")
+	pg_port := envs.GoDotEnvVariable("DB_PORT")
+	pg_user := envs.GoDotEnvVariable("DB_USER")
+	pg_pass := envs.GoDotEnvVariable("DB_PASS")
+	pg_name := envs.GoDotEnvVariable("DB_NAME")
+
+	db, err := sql.Open("postgres", "host="+pg_host+" port="+pg_port+" user="+pg_user+" password="+pg_pass+" dbname="+pg_name+" sslmode=disable")
 
 	return db, err
 }
@@ -48,7 +49,7 @@ func Task() {
 		}
 		log.Printf(" [x] %s", query_active)
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(60 * time.Second)
 
 		data = time.Now().Format("2006-01-02 15:04:05")
 		query_deactivate = "UPDATE polls SET is_active = 'false' WHERE start_date >'" + data + "' OR end_date <= '" + data + "';"
@@ -59,7 +60,7 @@ func Task() {
 		}
 		log.Printf(" [x] %s", query_deactivate)
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 
 }
