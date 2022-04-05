@@ -26,10 +26,10 @@ class PollService:
 
             return [dict(row) for row in result]
 
-    async def get_by_id(self, poll_id: str):
+    async def get_by_id(self, poll_id: str) -> models.Poll:
         async with database.async_session() as session:
             result = await session.execute(select(models.Poll).where(models.Poll.id == poll_id))
-            return result.first()
+            return dict(result.first())
 
     async def active_polls(self, poll_id: str, is_active: bool):
         async with database.async_session() as session:

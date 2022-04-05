@@ -1,7 +1,7 @@
 from app.security.auth import get_user_token
 from app.services.poll_service import PollService, AlternativeService
 from app.schemas.schemas import AlternativeCreate, PollCreate, User
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 from fastapi import APIRouter, BackgroundTasks, Security, HTTPException, status
 from app.settings.settings import app_settings
@@ -11,7 +11,6 @@ DEFAULT_MAX_TIME_TO_POLL = app_settings.DEFAULT_MAX_TIME_TO_POLL
 TIMESTAMP_TOLEANCE = 60
 INTERVAL_SECONDS = 10
 GMT = 3
-
 poll_router = APIRouter(tags=["Poll"])
 
 
@@ -20,10 +19,12 @@ async def create_poll(poll: PollCreate, alternatives: List[AlternativeCreate], u
     end_date = None
     start_date = None
 
-    time_now = (datetime.now() - timedelta(hours=GMT)).timestamp()
+    time_now = (datetime.now() - timedelta(hours=GMT)
+                ).replace(tzinfo=timezone.utc).timestamp()
+
     if poll.end_date is None:
-        end_date = datetime.now() + \
-            timedelta(seconds=DEFAULT_MAX_TIME_TO_POLL)
+        end_date = (datetime.now() - timedelta(hours=GMT)) + \
+            timedelta(minutes=DEFAULT_MAX_TIME_TO_POLL)
     else:
         aux_end_date = datetime(poll.end_date.year,
                                 poll.end_date.month,
@@ -45,7 +46,7 @@ async def create_poll(poll: PollCreate, alternatives: List[AlternativeCreate], u
     is_active = False
 
     if poll.start_date is None:
-        start_date = datetime.now()
+        start_date = (datetime.now() - timedelta(hours=GMT))
         is_active = True
     else:
         aux_start_date = datetime(poll.start_date.year,
@@ -125,7 +126,13 @@ async def get_all_deactivated_polls():
 
 @poll_router.get("/{poll_id}/{alternative_id}")
 async def vote(poll_id: str, alternative_id: str, task: BackgroundTasks):
-    task.add_task(queue_sender.send_message, {
-                  "poll_id": poll_id, "alternative_id": alternative_id})
 
-    return {"message": "Vote sent to queue"}
+    poll_service = PollService()
+    polls = await poll_service.get_by_id(poll_id)
+
+    if polls["Poll"].is_active:
+        task.add_task(queue_sender.send_message, {
+                      "alternative_id": alternative_id})
+        return {"message": "Vote sent to queue"}
+    else:
+        return {"message": "Poll is not active"}
