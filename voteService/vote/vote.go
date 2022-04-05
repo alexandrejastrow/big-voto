@@ -10,7 +10,6 @@ import (
 
 type Vote struct {
 	AlternativeID string `json:"alternative_id"`
-	PollId        string `json:"poll_id"`
 }
 
 func (v Vote) Save(db *sql.DB) error {
